@@ -41,3 +41,16 @@ li {
     padding: 10px;
     border-radius: 8px;
 }
+.assignment-section {
+    background: white;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.assignment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
