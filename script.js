@@ -3,19 +3,13 @@ const subjectInput = document.getElementById("subjectInput");
 const subjectList = document.getElementById("subjectList");
 
 const subjectSelect = document.getElementById("subjectSelect");
+const assignmentInput = document.getElementById("assignmentInput");
+const deadlineInput = document.getElementById("deadlineInput");
+const addAssignmentBtn = document.getElementById("addAssignmentBtn");
+const assignmentList = document.getElementById("assignmentList");
 
-const assignmentInput =
-document.getElementById("assignmentInput");
 
-const deadlineInput =
-document.getElementById("deadlineInput");
-
-const addAssignmentBtn =
-document.getElementById("addAssignmentBtn");
-
-const assignmentList =
-document.getElementById("assignmentList");
-
+// Add Subject
 addSubjectBtn.addEventListener("click", () => {
 
     const subjectName = subjectInput.value.trim();
@@ -26,30 +20,39 @@ addSubjectBtn.addEventListener("click", () => {
     }
 
     const li = document.createElement("li");
-li.textContent = subjectName;
 
-subjectList.appendChild(li);
+    li.innerHTML = `
+        <div class="subject-name">${subjectName}</div>
 
-const option = document.createElement("option");
-option.value = subjectName;
-option.textContent = subjectName;
+        <progress
+            id="progress-${subjectName}"
+            value="0"
+            max="100">
+        </progress>
 
-subjectSelect.appendChild(option);
+        <span id="percent-${subjectName}">
+            0%
+        </span>
+    `;
+
+    subjectList.appendChild(li);
+
+    const option = document.createElement("option");
+    option.value = subjectName;
+    option.textContent = subjectName;
+
+    subjectSelect.appendChild(option);
 
     subjectInput.value = "";
 });
 
 
+// Add Assignment
 addAssignmentBtn.addEventListener("click", () => {
 
-    const assignmentName =
-    assignmentInput.value.trim();
-
-    const subject =
-    subjectSelect.value;
-
-    const deadline =
-    deadlineInput.value;
+    const assignmentName = assignmentInput.value.trim();
+    const subject = subjectSelect.value;
+    const deadline = deadlineInput.value;
 
     if (
         assignmentName === "" ||
@@ -61,18 +64,61 @@ addAssignmentBtn.addEventListener("click", () => {
     }
 
     const li = document.createElement("li");
+    li.classList.add("assignment-item");
 
     li.innerHTML = `
-        <strong>${assignmentName}</strong>
-        <br>
-        Subject: ${subject}
-        <br>
-        Deadline: ${deadline}
-        <input type="checkbox">
+        <div>
+            <strong>${assignmentName}</strong>
+            <br>
+            Subject: ${subject}
+            <br>
+            Deadline: ${deadline}
+        </div>
+
+        <input
+            type="checkbox"
+            data-subject="${subject}">
     `;
 
     assignmentList.appendChild(li);
 
+    const checkbox = li.querySelector("input");
+
+    checkbox.addEventListener("change", () => {
+        updateProgress(subject);
+    });
+
     assignmentInput.value = "";
     deadlineInput.value = "";
 });
+
+
+// Update Progress Bar
+function updateProgress(subject) {
+
+    const assignments = document.querySelectorAll(
+        `input[data-subject="${subject}"]`
+    );
+
+    const total = assignments.length;
+
+    const completed = [...assignments].filter(
+        checkbox => checkbox.checked
+    ).length;
+
+    let percentage = 0;
+
+    if (total > 0) {
+        percentage = Math.round(
+            (completed / total) * 100
+        );
+    }
+
+    document.getElementById(
+        `progress-${subject}`
+    ).value = percentage;
+
+    document.getElementById(
+        `percent-${subject}`
+    ).textContent = `${percentage}%`;
+}
